@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (!file) return NextResponse.json({ error: "No file" }, { status: 400, headers: CORS });
 
     const filename = `uploads/${docType.replace(/[^a-zA-Z0-9._-]/g, "_")}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-    const blob = await put(filename, file, { access: "public", token: process.env.BLOB_READ_WRITE_TOKEN });
+    const blob = await put(filename, file, { access: "private", token: process.env.BLOB_READ_WRITE_TOKEN });
 
     return NextResponse.json({ ok: true, url: blob.url, name: file.name }, { headers: CORS });
   } catch (err) {
