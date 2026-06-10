@@ -36,3 +36,15 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
 
   return NextResponse.json({ ok: true });
 }
+
+export async function PATCH(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const db = await initDb();
+  const { id } = await params;
+
+  await db.execute({ sql: "UPDATE applications SET archived = 0 WHERE id = ?", args: [id] });
+
+  return NextResponse.json({ ok: true });
+}

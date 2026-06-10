@@ -50,14 +50,20 @@ function initials(name: string) {
 
 export default function DashboardPage() {
   const [apps, setApps] = useState<Application[]>([]);
+  const [archivedApps, setArchivedApps] = useState<Application[]>([]);
+  const [showArchived, setShowArchived] = useState(false);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [updatingId, setUpdatingId] = useState<number | null>(null);
 
   const fetchApps = useCallback(async () => {
-    const res = await fetch("/api/applications");
-    setApps(await res.json());
+    const [active, archived] = await Promise.all([
+      fetch("/api/applications").then(r => r.json()),
+      fetch("/api/applications?archived=1").then(r => r.json()),
+    ]);
+    setApps(active);
+    setArchivedApps(archived);
     setLoading(false);
   }, []);
 
@@ -77,6 +83,11 @@ export default function DashboardPage() {
   const deleteApp = async (id: number, name: string) => {
     if (!confirm(`Archive application for "${name}"? It will be hidden from the dashboard.`)) return;
     await fetch(`/api/applications/${id}`, { method: "DELETE" });
+    await fetchApps();
+  };
+
+  const restoreApp = async (id: number) => {
+    await fetch(`/api/applications/${id}`, { method: "PATCH" });
     await fetchApps();
   };
 
@@ -134,9 +145,17 @@ export default function DashboardPage() {
       <main style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 24px" }}>
 
         {/* Page heading */}
-        <div style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: "#2d4ebd", margin: 0 }}>Applications</h1>
-          <p style={{ color: "#64748b", fontSize: 14, marginTop: 4 }}>Manage and track all loan applications</p>
+        <div style={{ marginBottom: 28, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#2d4ebd", margin: 0 }}>Applications</h1>
+            <p style={{ color: "#64748b", fontSize: 14, marginTop: 4 }}>Manage and track all loan applications</p>
+          </div>
+          <button
+            onClick={() => setShowArchived(!showArchived)}
+            style={{ fontSize: 13, fontWeight: 600, padding: "8px 16px", borderRadius: 10, border: "1px solid #e2e8f0", backgroundColor: showArchived ? "#1e40af" : "#fff", color: showArchived ? "#fff" : "#64748b", cursor: "pointer" }}
+          >
+            {showArchived ? "← Active Applications" : `🗄 Archived (${archivedApps.length})`}
+          </button>
         </div>
 
         {/* Status cards */}
@@ -167,6 +186,64 @@ export default function DashboardPage() {
             );
           })}
         </div>
+
+        {/* Archived view */}
+        {showArchived && (
+          <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            {archivedApps.length === 0 ? (
+              <div style={{ padding: 60, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>No archived applications.</div>
+            ) : (
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                <thead>
+                  <tr style={{ borderBottom: "1px solid #f1f5f9", backgroundColor: "#f8fafc" }}>
+                    {["Application Date", "Business", "Owner", "Amount", "Status", ""].map((h) => (
+                      <th key={h} style={{ padding: "14px 20px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {archivedApps.map((app, i) => {
+                    const cfg = STATUS_CONFIG[app.status];
+                    return (
+                      <tr key={app.id} style={{ borderBottom: "1px solid #f8fafc", backgroundColor: i % 2 === 1 ? "#fafafa" : "#fff" }}>
+                        <td style={{ padding: "14px 20px", color: "#64748b", fontSize: 12, whiteSpace: "nowrap" }}>{formatDate(app.application_date)}</td>
+                        <td style={{ padding: "14px 20px" }}>
+                          <div style={{ fontWeight: 600, color: "#0f172a" }}>{app.business_name || "—"}</div>
+                          {app.industry && <div style={{ fontSize: 11, color: "#94a3b8" }}>{app.industry}</div>}
+                        </td>
+                        <td style={{ padding: "14px 20px" }}>
+                          <div style={{ fontWeight: 500, color: "#334155" }}>{app.owner_name || "—"}</div>
+                          {app.owner_email && <div style={{ fontSize: 11, color: "#94a3b8" }}>{app.owner_email}</div>}
+                        </td>
+                        <td style={{ padding: "14px 20px", fontWeight: 700, color: "#0f172a", whiteSpace: "nowrap" }}>{formatCurrency(app.amount_requested)}</td>
+                        <td style={{ padding: "14px 20px" }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, fontSize: 11, fontWeight: 700, backgroundColor: cfg?.bg ?? "#f1f5f9", color: cfg?.text ?? "#475569", border: `1px solid ${cfg?.border ?? "#e2e8f0"}` }}>
+                            <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: cfg?.dot ?? "#94a3b8", flexShrink: 0 }} />
+                            {app.status}
+                          </span>
+                        </td>
+                        <td style={{ padding: "14px 20px" }}>
+                          <button
+                            onClick={() => restoreApp(app.id)}
+                            style={{ fontSize: 12, fontWeight: 600, color: "#065f46", backgroundColor: "#ecfdf5", border: "1px solid #a7f3d0", padding: "6px 12px", borderRadius: 8, cursor: "pointer", whiteSpace: "nowrap" }}
+                          >
+                            Restore
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+            <div style={{ padding: "12px 20px", borderTop: "1px solid #f1f5f9", backgroundColor: "#f8fafc", fontSize: 12, color: "#94a3b8" }}>
+              {archivedApps.length} archived application{archivedApps.length !== 1 ? "s" : ""}
+            </div>
+          </div>
+        )}
+
+        {/* Search bar — hidden when viewing archived */}
+        {!showArchived && <>
 
         {/* Search bar */}
         <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: 16, marginBottom: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.04)", display: "flex", gap: 12 }}>
@@ -282,6 +359,7 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
+        </>}
       </main>
     </div>
   );

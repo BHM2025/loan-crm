@@ -1,15 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { initDb } from "@/lib/db";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const db = await initDb();
-  const result = await db.execute(`
-    SELECT id, submission_id, business_name, dba_name, owner_name, owner_email,
+  const archived = req.nextUrl.searchParams.get("archived") === "1";
+  const result = await db.execute({
+    sql: `SELECT id, submission_id, business_name, dba_name, owner_name, owner_email,
            owner_phone, amount_requested, credit_score, entity_type, industry,
            status, application_date, status_updated_at, created_at
     FROM applications
-    WHERE archived = 0 OR archived IS NULL
-    ORDER BY created_at DESC
-  `);
+    WHERE archived = ?
+    ORDER BY created_at DESC`,
+    args: [archived ? 1 : 0],
+  });
   return NextResponse.json(result.rows);
 }
