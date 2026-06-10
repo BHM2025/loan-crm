@@ -135,7 +135,7 @@ export default function DashboardPage() {
 
         {/* Page heading */}
         <div style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: "#0f172a", margin: 0 }}>Applications</h1>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: "#2d4ebd", margin: 0 }}>Applications</h1>
           <p style={{ color: "#64748b", fontSize: 14, marginTop: 4 }}>Manage and track all loan applications</p>
         </div>
 
@@ -222,8 +222,8 @@ export default function DashboardPage() {
                         onMouseLeave={e => (e.currentTarget.style.backgroundColor = i % 2 === 1 ? "#fafafa" : "#fff")}
                       >
                         <td style={{ padding: "14px 20px", color: "#64748b", fontSize: 12, whiteSpace: "nowrap" }}>{formatDate(app.application_date)}</td>
-                        <td style={{ padding: "14px 20px" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <td style={{ padding: "14px 20px", textAlign: "center" }}>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
                             <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: AVATAR_BG[i % AVATAR_BG.length], display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
                               {initials(app.business_name)}
                             </div>
