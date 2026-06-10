@@ -32,10 +32,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const db = await initDb();
   const { id } = await params;
 
-  await db.execute({ sql: "DELETE FROM documents WHERE application_id = ?", args: [id] });
-  await db.execute({ sql: "DELETE FROM status_history WHERE application_id = ?", args: [id] });
-  await db.execute({ sql: "DELETE FROM notes WHERE application_id = ?", args: [id] });
-  await db.execute({ sql: "DELETE FROM applications WHERE id = ?", args: [id] });
+  await db.execute({ sql: "UPDATE applications SET archived = 1 WHERE id = ?", args: [id] });
 
   return NextResponse.json({ ok: true });
 }

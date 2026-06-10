@@ -75,7 +75,7 @@ export default function DashboardPage() {
   };
 
   const deleteApp = async (id: number, name: string) => {
-    if (!confirm(`Delete application for "${name}"? This cannot be undone.`)) return;
+    if (!confirm(`Archive application for "${name}"? It will be hidden from the dashboard.`)) return;
     await fetch(`/api/applications/${id}`, { method: "DELETE" });
     await fetchApps();
   };
@@ -264,9 +264,9 @@ export default function DashboardPage() {
                             </Link>
                             <button
                               onClick={() => deleteApp(app.id, app.business_name)}
-                              style={{ fontSize: 12, fontWeight: 600, color: "#dc2626", backgroundColor: "#fef2f2", border: "1px solid #fecaca", padding: "6px 10px", borderRadius: 8, cursor: "pointer", whiteSpace: "nowrap" }}
+                              style={{ fontSize: 12, fontWeight: 600, color: "#b45309", backgroundColor: "#fffbeb", border: "1px solid #fde68a", padding: "6px 10px", borderRadius: 8, cursor: "pointer", whiteSpace: "nowrap" }}
                             >
-                              🗑
+                              Archive
                             </button>
                           </div>
                         </td>

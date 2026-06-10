@@ -8,6 +8,7 @@ export async function GET() {
            owner_phone, amount_requested, credit_score, entity_type, industry,
            status, application_date, status_updated_at, created_at
     FROM applications
+    WHERE archived = 0 OR archived IS NULL
     ORDER BY created_at DESC
   `);
   return NextResponse.json(result.rows);

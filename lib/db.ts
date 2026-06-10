@@ -35,10 +35,14 @@ const SCHEMA = `
     owner_email TEXT,
     ownership_percentage TEXT,
     status TEXT NOT NULL DEFAULT 'New',
+    archived INTEGER NOT NULL DEFAULT 0,
     application_date TEXT,
     status_updated_at TEXT,
     created_at TEXT DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS _migrations (key TEXT PRIMARY KEY);
+
 
   CREATE TABLE IF NOT EXISTS documents (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -87,6 +91,10 @@ export async function initDb(): Promise<Client> {
   const db = getDb();
   if (!initialized) {
     await db.executeMultiple(SCHEMA);
+    // Add archived column to existing DBs that predate the schema change
+    try {
+      await db.execute("ALTER TABLE applications ADD COLUMN archived INTEGER NOT NULL DEFAULT 0");
+    } catch {}
     initialized = true;
   }
   return db;
