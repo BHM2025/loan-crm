@@ -48,6 +48,15 @@ const SCHEMA = `
     changed_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (application_id) REFERENCES applications(id)
   );
+
+  CREATE TABLE IF NOT EXISTS notes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    application_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    author TEXT DEFAULT 'Admin',
+    created_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (application_id) REFERENCES applications(id)
+  );
 `;
 
 let _db: Client | null = null;

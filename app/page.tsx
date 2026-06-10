@@ -108,8 +108,16 @@ export default function DashboardPage() {
               <div style={{ color: "#94a3b8", fontSize: 11 }}>Loan CRM</div>
             </div>
           </div>
-          <div style={{ background: "#f1f5f9", borderRadius: 20, padding: "6px 14px", fontSize: 12, color: "#64748b", fontWeight: 600 }}>
-            {apps.length} Applications
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ background: "#f1f5f9", borderRadius: 20, padding: "6px 14px", fontSize: 12, color: "#64748b", fontWeight: 600 }}>
+              {apps.length} Applications
+            </div>
+            <button
+              onClick={async () => { await fetch("/api/auth/logout", { method: "POST" }); window.location.href = "/login"; }}
+              style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 20, padding: "6px 14px", fontSize: 12, color: "#dc2626", fontWeight: 600, cursor: "pointer" }}
+            >
+              Sign Out
+            </button>
           </div>
         </div>
       </header>

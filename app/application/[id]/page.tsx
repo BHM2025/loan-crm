@@ -13,6 +13,13 @@ const STATUS_CONFIG: Record<string, { bg: string; text: string; border: string; 
   Declined:     { bg: "#fef2f2", text: "#b91c1c", border: "#fecaca", btnBg: "#ef4444", dot: "#ef4444" },
 };
 
+interface Note {
+  id: number;
+  content: string;
+  author: string;
+  created_at: string;
+}
+
 interface Document {
   id: number;
   document_type: string;
@@ -95,6 +102,36 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [newNote, setNewNote] = useState("");
+  const [savingNote, setSavingNote] = useState(false);
+
+  const fetchNotes = async () => {
+    const res = await fetch(`/api/applications/${id}/notes`);
+    if (res.ok) setNotes(await res.json());
+  };
+
+  const addNote = async () => {
+    if (!newNote.trim()) return;
+    setSavingNote(true);
+    await fetch(`/api/applications/${id}/notes`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: newNote }),
+    });
+    setNewNote("");
+    await fetchNotes();
+    setSavingNote(false);
+  };
+
+  const deleteNote = async (noteId: number) => {
+    await fetch(`/api/applications/${id}/notes`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ noteId }),
+    });
+    await fetchNotes();
+  };
 
   const fetchApp = async () => {
     const res = await fetch(`/api/applications/${id}`);
@@ -102,7 +139,7 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
     setLoading(false);
   };
 
-  useEffect(() => { fetchApp(); }, [id]);
+  useEffect(() => { fetchApp(); fetchNotes(); }, [id]);
 
   const updateStatus = async (status: string) => {
     if (!app) return;
@@ -144,10 +181,16 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
               </div>
             </div>
           </div>
-          <span style={{ padding: "5px 12px", borderRadius: 20, fontSize: 12, fontWeight: 700, backgroundColor: cfg?.bg ?? "#f1f5f9", color: cfg?.text ?? "#475569", border: `1px solid ${cfg?.border ?? "#e2e8f0"}`, display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ width: 7, height: 7, borderRadius: "50%", backgroundColor: cfg?.dot ?? "#94a3b8" }} />
-            {app.status}
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ padding: "5px 12px", borderRadius: 20, fontSize: 12, fontWeight: 700, backgroundColor: cfg?.bg ?? "#f1f5f9", color: cfg?.text ?? "#475569", border: `1px solid ${cfg?.border ?? "#e2e8f0"}`, display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ width: 7, height: 7, borderRadius: "50%", backgroundColor: cfg?.dot ?? "#94a3b8" }} />
+              {app.status}
+            </span>
+            <button
+              onClick={async () => { await fetch("/api/auth/logout", { method: "POST" }); window.location.href = "/login"; }}
+              style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 20, padding: "5px 14px", fontSize: 12, color: "#dc2626", fontWeight: 600, cursor: "pointer" }}
+            >Sign Out</button>
+          </div>
         </div>
       </header>
 
@@ -292,6 +335,57 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
                   );
                 })}
               </div>
+            </div>
+          )}
+        </Card>
+
+        {/* Notes */}
+        <Card title={`Notes & Comments (${notes.length})`} icon="💬">
+          {/* Add note */}
+          <div style={{ marginBottom: 20 }}>
+            <textarea
+              value={newNote}
+              onChange={(e) => setNewNote(e.target.value)}
+              placeholder="Add a note or comment about this application..."
+              rows={3}
+              style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, outline: "none", resize: "vertical", boxSizing: "border-box", fontFamily: "system-ui,sans-serif", color: "#0f172a", backgroundColor: "#f8fafc" }}
+              onFocus={e => e.target.style.borderColor = "#3b82f6"}
+              onBlur={e => e.target.style.borderColor = "#e2e8f0"}
+              onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) addNote(); }}
+            />
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
+              <button
+                onClick={addNote}
+                disabled={savingNote || !newNote.trim()}
+                style={{ padding: "9px 20px", borderRadius: 10, border: "none", background: savingNote || !newNote.trim() ? "#94a3b8" : "linear-gradient(135deg,#3b82f6,#8b5cf6)", color: "#fff", fontSize: 13, fontWeight: 700, cursor: savingNote || !newNote.trim() ? "not-allowed" : "pointer", boxShadow: "0 2px 8px rgba(99,102,241,0.3)" }}
+              >
+                {savingNote ? "Saving…" : "Add Note"}
+              </button>
+            </div>
+          </div>
+
+          {/* Notes list */}
+          {notes.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "24px 0", color: "#94a3b8", fontSize: 13 }}>No notes yet. Add the first one above.</div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {notes.map((note) => (
+                <div key={note.id} style={{ padding: "14px 16px", borderRadius: 12, backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", position: "relative" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+                    <p style={{ margin: 0, fontSize: 13, color: "#334155", lineHeight: 1.6, flex: 1 }}>{note.content}</p>
+                    <button
+                      onClick={() => deleteNote(note.id)}
+                      title="Delete note"
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#cbd5e1", fontSize: 16, padding: "0 2px", flexShrink: 0, lineHeight: 1 }}
+                      onMouseEnter={e => (e.currentTarget.style.color = "#ef4444")}
+                      onMouseLeave={e => (e.currentTarget.style.color = "#cbd5e1")}
+                    >×</button>
+                  </div>
+                  <div style={{ marginTop: 8, fontSize: 11, color: "#94a3b8" }}>
+                    <span style={{ fontWeight: 600 }}>Admin</span> · {formatDate(note.created_at)}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </Card>
