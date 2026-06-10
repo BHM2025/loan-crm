@@ -208,7 +208,7 @@ export default function DashboardPage() {
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
                   <tr style={{ borderBottom: "1px solid #f1f5f9", backgroundColor: "#f8fafc" }}>
-                    {["Business", "Owner", "Amount", "Applied", "Status Updated", "Status", "Change Status", ""].map((h) => (
+                    {["Applied", "Business", "Owner", "Amount", "Status", "Change Status", "", "Status Updated"].map((h) => (
                       <th key={h} style={{ padding: "14px 20px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>{h}</th>
                     ))}
                   </tr>
@@ -221,6 +221,7 @@ export default function DashboardPage() {
                         onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f0f7ff")}
                         onMouseLeave={e => (e.currentTarget.style.backgroundColor = i % 2 === 1 ? "#fafafa" : "#fff")}
                       >
+                        <td style={{ padding: "14px 20px", color: "#64748b", fontSize: 12, whiteSpace: "nowrap" }}>{formatDate(app.application_date)}</td>
                         <td style={{ padding: "14px 20px" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                             <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: AVATAR_BG[i % AVATAR_BG.length], display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
@@ -237,8 +238,6 @@ export default function DashboardPage() {
                           {app.owner_email && <div style={{ fontSize: 11, color: "#94a3b8" }}>{app.owner_email}</div>}
                         </td>
                         <td style={{ padding: "14px 20px", fontWeight: 700, color: "#0f172a", whiteSpace: "nowrap" }}>{formatCurrency(app.amount_requested)}</td>
-                        <td style={{ padding: "14px 20px", color: "#64748b", fontSize: 12, whiteSpace: "nowrap" }}>{formatDate(app.application_date)}</td>
-                        <td style={{ padding: "14px 20px", color: "#64748b", fontSize: 12, whiteSpace: "nowrap" }}>{formatDate(app.status_updated_at)}</td>
                         <td style={{ padding: "14px 20px" }}>
                           <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, fontSize: 11, fontWeight: 700, backgroundColor: cfg?.bg ?? "#f1f5f9", color: cfg?.text ?? "#475569", border: `1px solid ${cfg?.border ?? "#e2e8f0"}` }}>
                             <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: cfg?.dot ?? "#94a3b8", flexShrink: 0 }} />
@@ -271,6 +270,7 @@ export default function DashboardPage() {
                             </button>
                           </div>
                         </td>
+                        <td style={{ padding: "14px 20px", color: "#64748b", fontSize: 12, whiteSpace: "nowrap" }}>{formatDate(app.status_updated_at)}</td>
                       </tr>
                     );
                   })}
