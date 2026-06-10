@@ -175,7 +175,7 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
   const cfg = STATUS_CONFIG[app.status];
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f8fafc", fontFamily: "system-ui, sans-serif" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "transparent", fontFamily: "system-ui, sans-serif" }}>
 
       {/* Header */}
       <header style={{ backgroundColor: "#fff", borderBottom: "1px solid #e2e8f0", position: "sticky", top: 0, zIndex: 10, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>

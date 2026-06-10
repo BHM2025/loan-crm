@@ -36,7 +36,7 @@ function LoginForm() {
   });
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f8fafc", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "system-ui, sans-serif" }}>
+    <div style={{ minHeight: "100vh", backgroundImage: "url('/bg.png')", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "system-ui, sans-serif" }}>
       <div style={{ width: "100%", maxWidth: 400, padding: "0 24px" }}>
 
         {/* Logo */}
