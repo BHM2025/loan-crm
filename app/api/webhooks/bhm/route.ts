@@ -76,6 +76,15 @@ export async function POST(req: NextRequest) {
       args: [appId, "New"],
     });
 
+    // Store uploaded document URLs passed from the form
+    const docs: { url: string; name: string; docType: string }[] = body.documents ?? [];
+    for (const doc of docs) {
+      await db.execute({
+        sql: "INSERT INTO documents (application_id, document_type, original_url, filename, file_path) VALUES (?, ?, ?, ?, ?)",
+        args: [appId, doc.docType, doc.url, doc.name, doc.url],
+      });
+    }
+
     // Store signature as a document if provided
     if (body.signature && typeof body.signature === "string" && body.signature.startsWith("data:image")) {
       await db.execute({
