@@ -299,16 +299,9 @@ export default function DashboardPage() {
                         onMouseLeave={e => (e.currentTarget.style.backgroundColor = i % 2 === 1 ? "#fafafa" : "#fff")}
                       >
                         <td style={{ padding: "14px 20px", color: "#64748b", fontSize: 12, whiteSpace: "nowrap" }}>{formatDate(app.application_date)}</td>
-                        <td style={{ padding: "14px 20px", textAlign: "center" }}>
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-                            <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: AVATAR_BG[i % AVATAR_BG.length], display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
-                              {initials(app.business_name)}
-                            </div>
-                            <div>
-                              <div style={{ fontWeight: 600, color: "#0f172a" }}>{app.business_name || "—"}</div>
-                              {app.industry && <div style={{ fontSize: 11, color: "#94a3b8" }}>{app.industry}</div>}
-                            </div>
-                          </div>
+                        <td style={{ padding: "14px 20px" }}>
+                          <div style={{ fontWeight: 600, color: "#0f172a" }}>{app.business_name || "—"}</div>
+                          {app.industry && <div style={{ fontSize: 11, color: "#94a3b8" }}>{app.industry}</div>}
                         </td>
                         <td style={{ padding: "14px 20px" }}>
                           <div style={{ fontWeight: 500, color: "#334155" }}>{app.owner_name || "—"}</div>
