@@ -5,12 +5,12 @@ import Link from "next/link";
 
 const STATUS_OPTIONS = ["New", "Underwriting", "Approved", "Funded", "Declined"];
 
-const STATUS_STYLES: Record<string, { badge: string; btn: string; dot: string }> = {
-  New:          { badge: "bg-blue-100 text-blue-700 ring-1 ring-blue-200",          btn: "bg-blue-600 text-white hover:bg-blue-700",          dot: "bg-blue-500" },
-  Underwriting: { badge: "bg-amber-100 text-amber-700 ring-1 ring-amber-200",        btn: "bg-amber-500 text-white hover:bg-amber-600",         dot: "bg-amber-500" },
-  Approved:     { badge: "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200",  btn: "bg-emerald-600 text-white hover:bg-emerald-700",     dot: "bg-emerald-500" },
-  Funded:       { badge: "bg-violet-100 text-violet-700 ring-1 ring-violet-200",     btn: "bg-violet-600 text-white hover:bg-violet-700",       dot: "bg-violet-500" },
-  Declined:     { badge: "bg-red-100 text-red-700 ring-1 ring-red-200",             btn: "bg-red-600 text-white hover:bg-red-700",             dot: "bg-red-500" },
+const STATUS_CONFIG: Record<string, { bg: string; text: string; border: string; btnBg: string; dot: string }> = {
+  New:          { bg: "#eff6ff", text: "#1d4ed8", border: "#bfdbfe", btnBg: "#3b82f6", dot: "#3b82f6" },
+  Underwriting: { bg: "#fffbeb", text: "#b45309", border: "#fde68a", btnBg: "#f59e0b", dot: "#f59e0b" },
+  Approved:     { bg: "#ecfdf5", text: "#065f46", border: "#a7f3d0", btnBg: "#10b981", dot: "#10b981" },
+  Funded:       { bg: "#f5f3ff", text: "#5b21b6", border: "#ddd6fe", btnBg: "#8b5cf6", dot: "#8b5cf6" },
+  Declined:     { bg: "#fef2f2", text: "#b91c1c", border: "#fecaca", btnBg: "#ef4444", dot: "#ef4444" },
 };
 
 interface Document {
@@ -70,21 +70,21 @@ function formatCurrency(val: string) {
 
 function Card({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2.5">
-        <span className="text-lg">{icon}</span>
-        <h2 className="font-semibold text-slate-700 text-sm">{title}</h2>
+    <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", overflow: "hidden" }}>
+      <div style={{ padding: "16px 24px", borderBottom: "1px solid #f1f5f9", display: "flex", alignItems: "center", gap: 10 }}>
+        <span style={{ fontSize: 18 }}>{icon}</span>
+        <span style={{ fontWeight: 700, color: "#334155", fontSize: 14 }}>{title}</span>
       </div>
-      <div className="p-6">{children}</div>
+      <div style={{ padding: 24 }}>{children}</div>
     </div>
   );
 }
 
-function Field({ label, value, mono }: { label: string; value?: string | null; mono?: boolean }) {
+function Field({ label, value }: { label: string; value?: string | null }) {
   return (
     <div>
-      <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{label}</div>
-      <div className={`text-sm text-slate-800 font-medium ${mono ? "font-mono" : ""}`}>{value || "—"}</div>
+      <div style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 13, color: "#0f172a", fontWeight: 500 }}>{value || "—"}</div>
     </div>
   );
 }
@@ -118,91 +118,98 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
     setUpdating(false);
   };
 
-  if (loading) return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-      <div className="text-slate-400 text-sm">Loading application...</div>
-    </div>
-  );
-  if (!app) return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-      <div className="text-slate-400 text-sm">Application not found.</div>
-    </div>
-  );
+  if (loading) return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8", fontFamily: "system-ui,sans-serif" }}>Loading...</div>;
+  if (!app) return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8", fontFamily: "system-ui,sans-serif" }}>Not found.</div>;
+
+  const cfg = STATUS_CONFIG[app.status];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div style={{ minHeight: "100vh", backgroundColor: "#f8fafc", fontFamily: "system-ui, sans-serif" }}>
+
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-2 text-slate-400 hover:text-slate-600 transition-colors text-sm font-medium">
-              <span>←</span>
-              <span>All Applications</span>
+      <header style={{ backgroundColor: "#fff", borderBottom: "1px solid #e2e8f0", position: "sticky", top: 0, zIndex: 10, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+        <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <Link href="/" style={{ color: "#64748b", textDecoration: "none", fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
+              ← All Applications
             </Link>
-            <div className="h-5 w-px bg-slate-200" />
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center shadow-sm">
-                <span className="text-white text-xs font-bold">MX</span>
+            <span style={{ width: 1, height: 20, backgroundColor: "#e2e8f0" }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: "linear-gradient(135deg,#3b82f6,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ color: "#fff", fontSize: 11, fontWeight: 700 }}>MX</span>
               </div>
               <div>
-                <div className="font-bold text-slate-800 text-sm leading-tight">{app.business_name || `Application #${app.id}`}</div>
-                <div className="text-xs text-slate-400 leading-tight">Submitted {formatDate(app.application_date)}</div>
+                <div style={{ fontWeight: 700, color: "#0f172a", fontSize: 14 }}>{app.business_name || `Application #${app.id}`}</div>
+                <div style={{ color: "#94a3b8", fontSize: 11 }}>Submitted {formatDate(app.application_date)}</div>
               </div>
             </div>
           </div>
-          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${STATUS_STYLES[app.status]?.badge ?? "bg-slate-100 text-slate-600"}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${STATUS_STYLES[app.status]?.dot ?? "bg-slate-400"}`} />
+          <span style={{ padding: "5px 12px", borderRadius: 20, fontSize: 12, fontWeight: 700, backgroundColor: cfg?.bg ?? "#f1f5f9", color: cfg?.text ?? "#475569", border: `1px solid ${cfg?.border ?? "#e2e8f0"}`, display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ width: 7, height: 7, borderRadius: "50%", backgroundColor: cfg?.dot ?? "#94a3b8" }} />
             {app.status}
           </span>
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+      <div style={{ maxWidth: 960, margin: "0 auto", padding: "32px 24px", display: "flex", flexDirection: "column", gap: 20 }}>
 
-        {/* Amount highlight */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-gradient-to-br from-blue-600 to-violet-600 rounded-2xl p-5 text-white shadow-md">
-            <div className="text-blue-200 text-xs font-semibold uppercase tracking-wider mb-1">Amount Requested</div>
-            <div className="text-3xl font-bold">{formatCurrency(app.amount_requested)}</div>
-            {app.use_of_funds && <div className="text-blue-200 text-xs mt-1 truncate">{app.use_of_funds}</div>}
+        {/* Top stats */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+          <div style={{ background: "linear-gradient(135deg,#3b82f6,#8b5cf6)", borderRadius: 16, padding: "22px 24px", boxShadow: "0 4px 16px rgba(99,102,241,0.3)" }}>
+            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Amount Requested</div>
+            <div style={{ color: "#fff", fontSize: 28, fontWeight: 800 }}>{formatCurrency(app.amount_requested)}</div>
+            {app.use_of_funds && <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 4 }}>{app.use_of_funds}</div>}
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Credit Score</div>
-            <div className="text-2xl font-bold text-slate-800">{app.credit_score || "—"}</div>
-            <div className="text-slate-400 text-xs mt-1">{app.entity_type || ""}</div>
+          <div style={{ background: "#fff", borderRadius: 16, padding: "22px 24px", border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div style={{ color: "#94a3b8", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Credit Score</div>
+            <div style={{ color: "#0f172a", fontSize: 26, fontWeight: 800 }}>{app.credit_score || "—"}</div>
+            <div style={{ color: "#94a3b8", fontSize: 12, marginTop: 4 }}>{app.entity_type || ""}</div>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Application Date</div>
-            <div className="text-base font-bold text-slate-800">{formatDate(app.application_date).split(",")[0]}</div>
-            <div className="text-slate-400 text-xs mt-1">Status updated {formatDate(app.status_updated_at).split(",")[0]}</div>
+          <div style={{ background: "#fff", borderRadius: 16, padding: "22px 24px", border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div style={{ color: "#94a3b8", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Application Date</div>
+            <div style={{ color: "#0f172a", fontSize: 15, fontWeight: 700 }}>{formatDate(app.application_date)}</div>
+            <div style={{ color: "#94a3b8", fontSize: 12, marginTop: 4 }}>Updated {formatDate(app.status_updated_at)}</div>
           </div>
         </div>
 
         {/* Status update */}
-        <Card title="Update Status" icon="🔄">
-          <div className="flex flex-wrap gap-2 items-center">
-            {STATUS_OPTIONS.map((s) => (
-              <button
-                key={s}
-                onClick={() => updateStatus(s)}
-                disabled={updating}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all disabled:opacity-60 ${
-                  app.status === s
-                    ? STATUS_STYLES[s]?.btn + " shadow-md scale-105 cursor-default"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer"
-                }`}
-              >
-                {s}
-              </button>
-            ))}
-            {updating && <span className="text-xs text-slate-400 animate-pulse ml-1">Saving…</span>}
-            {saved && <span className="text-xs text-emerald-600 font-semibold ml-1">✓ Status updated</span>}
+        <Card title="Update Application Status" icon="🔄">
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+            {STATUS_OPTIONS.map((s) => {
+              const scfg = STATUS_CONFIG[s];
+              const isActive = app.status === s;
+              return (
+                <button
+                  key={s}
+                  onClick={() => updateStatus(s)}
+                  disabled={updating}
+                  style={{
+                    padding: "9px 18px",
+                    borderRadius: 10,
+                    fontSize: 13,
+                    fontWeight: 700,
+                    border: "none",
+                    cursor: updating ? "not-allowed" : "pointer",
+                    backgroundColor: isActive ? scfg.btnBg : "#f1f5f9",
+                    color: isActive ? "#fff" : "#475569",
+                    boxShadow: isActive ? `0 4px 12px ${scfg.dot}55` : "none",
+                    transform: isActive ? "scale(1.04)" : "scale(1)",
+                    transition: "all 0.15s",
+                    opacity: updating ? 0.6 : 1,
+                  }}
+                >
+                  {s}
+                </button>
+              );
+            })}
+            {updating && <span style={{ fontSize: 12, color: "#94a3b8" }}>Saving…</span>}
+            {saved && <span style={{ fontSize: 12, color: "#10b981", fontWeight: 700 }}>✓ Status updated</span>}
           </div>
         </Card>
 
         {/* Business info */}
         <Card title="Business Information" icon="🏢">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
             <Field label="Business Name" value={app.business_name} />
             <Field label="DBA / Alternate" value={app.dba_name} />
             <Field label="Industry" value={app.industry} />
@@ -213,25 +220,25 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
             <Field label="First-Time Funding" value={app.first_time_funding} />
             <Field label="Date Started" value={app.date_started} />
             <Field label="Employees" value={app.num_employees} />
-            <Field label="EIN / Tax ID" value={app.ein} mono />
+            <Field label="EIN / Tax ID" value={app.ein} />
             <Field label="Credit Score" value={app.credit_score} />
           </div>
-          <div className="mt-6 pt-5 border-t border-slate-100">
+          <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid #f1f5f9" }}>
             <Field label="Business Address" value={app.business_address} />
           </div>
         </Card>
 
         {/* Owner info */}
         <Card title="Owner Information" icon="👤">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
             <Field label="Full Name" value={app.owner_name} />
             <Field label="Email" value={app.owner_email} />
             <Field label="Phone" value={app.owner_phone} />
             <Field label="Date of Birth" value={app.owner_dob} />
-            <Field label="SSN" value={app.owner_ssn ? `•••-••-${app.owner_ssn.slice(-4)}` : undefined} mono />
+            <Field label="SSN" value={app.owner_ssn ? `•••-••-${app.owner_ssn.slice(-4)}` : undefined} />
             <Field label="Ownership %" value={app.ownership_percentage} />
           </div>
-          <div className="mt-6 pt-5 border-t border-slate-100">
+          <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid #f1f5f9" }}>
             <Field label="Home Address" value={app.owner_home_address} />
           </div>
         </Card>
@@ -239,27 +246,21 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
         {/* Documents */}
         <Card title={`Documents (${app.documents.length})`} icon="📁">
           {app.documents.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="text-4xl mb-3">📂</div>
-              <p className="text-slate-400 text-sm">No documents uploaded with this application.</p>
+            <div style={{ textAlign: "center", padding: "32px 0" }}>
+              <div style={{ fontSize: 40, marginBottom: 10 }}>📂</div>
+              <div style={{ color: "#94a3b8", fontSize: 13 }}>No documents uploaded.</div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {app.documents.map((doc) => (
-                <div key={doc.id} className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-200 transition-colors group">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-xl shadow-sm shrink-0">
-                    📄
+                <div key={doc.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: 14, borderRadius: 12, border: "1px solid #e2e8f0", backgroundColor: "#f8fafc" }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: "#fff", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>📄</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a" }}>{doc.document_type}</div>
+                    <div style={{ fontSize: 11, color: "#94a3b8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{doc.filename || "View file"}</div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-slate-800">{doc.document_type}</div>
-                    <div className="text-xs text-slate-400 truncate">{doc.filename || "View file"}</div>
-                  </div>
-                  <a
-                    href={doc.file_path || doc.original_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="shrink-0 text-xs font-semibold text-blue-600 bg-blue-100 hover:bg-blue-200 px-3 py-1.5 rounded-lg transition-colors"
-                  >
+                  <a href={doc.file_path || doc.original_url} target="_blank" rel="noopener noreferrer"
+                    style={{ fontSize: 11, fontWeight: 700, color: "#3b82f6", backgroundColor: "#eff6ff", padding: "6px 12px", borderRadius: 8, textDecoration: "none", flexShrink: 0 }}>
                     Open ↗
                   </a>
                 </div>
@@ -271,24 +272,25 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
         {/* Status history */}
         <Card title="Status History" icon="📅">
           {app.statusHistory.length === 0 ? (
-            <p className="text-sm text-slate-400">No history yet.</p>
+            <div style={{ color: "#94a3b8", fontSize: 13 }}>No history yet.</div>
           ) : (
-            <div className="relative pl-4">
-              <div className="absolute left-[7px] top-2 bottom-2 w-px bg-slate-200" />
-              <div className="space-y-4">
-                {app.statusHistory.map((h, i) => (
-                  <div key={h.id} className="relative flex items-center gap-4 pl-4">
-                    <div className={`absolute -left-[1px] w-3 h-3 rounded-full border-2 border-white shadow ${i === app.statusHistory.length - 1 ? STATUS_STYLES[h.status]?.dot ?? "bg-blue-500" : "bg-slate-300"}`} />
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${STATUS_STYLES[h.status]?.badge ?? "bg-slate-100 text-slate-600"}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${STATUS_STYLES[h.status]?.dot ?? "bg-slate-400"}`} />
-                      {h.status}
-                    </span>
-                    <span className="text-xs text-slate-400">{formatDate(h.changed_at)}</span>
-                    {i === app.statusHistory.length - 1 && (
-                      <span className="text-xs text-emerald-600 font-semibold">Current</span>
-                    )}
-                  </div>
-                ))}
+            <div style={{ position: "relative", paddingLeft: 20 }}>
+              <div style={{ position: "absolute", left: 7, top: 8, bottom: 8, width: 2, backgroundColor: "#e2e8f0" }} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                {app.statusHistory.map((h, i) => {
+                  const hcfg = STATUS_CONFIG[h.status];
+                  const isLatest = i === app.statusHistory.length - 1;
+                  return (
+                    <div key={h.id} style={{ display: "flex", alignItems: "center", gap: 14, position: "relative" }}>
+                      <div style={{ position: "absolute", left: -16, width: 12, height: 12, borderRadius: "50%", backgroundColor: isLatest ? (hcfg?.dot ?? "#3b82f6") : "#cbd5e1", border: "2px solid #fff", boxShadow: "0 0 0 1px #e2e8f0" }} />
+                      <span style={{ padding: "4px 10px", borderRadius: 20, fontSize: 11, fontWeight: 700, backgroundColor: hcfg?.bg ?? "#f1f5f9", color: hcfg?.text ?? "#475569", border: `1px solid ${hcfg?.border ?? "#e2e8f0"}` }}>
+                        {h.status}
+                      </span>
+                      <span style={{ fontSize: 12, color: "#94a3b8" }}>{formatDate(h.changed_at)}</span>
+                      {isLatest && <span style={{ fontSize: 11, fontWeight: 700, color: "#10b981" }}>Current</span>}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

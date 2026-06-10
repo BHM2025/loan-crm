@@ -5,17 +5,16 @@ import Link from "next/link";
 
 const STATUS_OPTIONS = ["New", "Underwriting", "Approved", "Funded", "Declined"];
 
-const STATUS_STYLES: Record<string, { badge: string; card: string; dot: string }> = {
-  New:          { badge: "bg-blue-100 text-blue-700 ring-1 ring-blue-200",          card: "from-blue-500 to-blue-600",    dot: "bg-blue-500" },
-  Underwriting: { badge: "bg-amber-100 text-amber-700 ring-1 ring-amber-200",        card: "from-amber-500 to-orange-500", dot: "bg-amber-500" },
-  Approved:     { badge: "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200",  card: "from-emerald-500 to-green-600", dot: "bg-emerald-500" },
-  Funded:       { badge: "bg-violet-100 text-violet-700 ring-1 ring-violet-200",     card: "from-violet-500 to-purple-600", dot: "bg-violet-500" },
-  Declined:     { badge: "bg-red-100 text-red-700 ring-1 ring-red-200",             card: "from-red-500 to-rose-600",     dot: "bg-red-500" },
+// Using inline styles for colors so Tailwind purging doesn't remove them
+const STATUS_CONFIG: Record<string, { bg: string; text: string; border: string; cardBg: string; cardText: string; dot: string; icon: string }> = {
+  New:          { bg: "#eff6ff", text: "#1d4ed8", border: "#bfdbfe", cardBg: "linear-gradient(135deg,#3b82f6,#6366f1)", cardText: "#fff", dot: "#3b82f6", icon: "📋" },
+  Underwriting: { bg: "#fffbeb", text: "#b45309", border: "#fde68a", cardBg: "linear-gradient(135deg,#f59e0b,#ef4444)", cardText: "#fff", dot: "#f59e0b", icon: "🔍" },
+  Approved:     { bg: "#ecfdf5", text: "#065f46", border: "#a7f3d0", cardBg: "linear-gradient(135deg,#10b981,#059669)", cardText: "#fff", dot: "#10b981", icon: "✅" },
+  Funded:       { bg: "#f5f3ff", text: "#5b21b6", border: "#ddd6fe", cardBg: "linear-gradient(135deg,#8b5cf6,#6d28d9)", cardText: "#fff", dot: "#8b5cf6", icon: "💰" },
+  Declined:     { bg: "#fef2f2", text: "#b91c1c", border: "#fecaca", cardBg: "linear-gradient(135deg,#ef4444,#dc2626)", cardText: "#fff", dot: "#ef4444", icon: "❌" },
 };
 
-const STATUS_ICONS: Record<string, string> = {
-  New: "📋", Underwriting: "🔍", Approved: "✅", Funded: "💰", Declined: "❌",
-};
+const AVATAR_BG = ["#3b82f6","#8b5cf6","#10b981","#f59e0b","#ef4444","#06b6d4"];
 
 interface Application {
   id: number;
@@ -48,8 +47,6 @@ function initials(name: string) {
   if (!name) return "?";
   return name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
 }
-
-const AVATAR_COLORS = ["bg-blue-500","bg-violet-500","bg-emerald-500","bg-amber-500","bg-rose-500","bg-cyan-500"];
 
 export default function DashboardPage() {
   const [apps, setApps] = useState<Application[]>([]);
@@ -97,167 +94,165 @@ export default function DashboardPage() {
   }, {} as Record<string, number>);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Top navbar */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center shadow">
-              <span className="text-white text-sm font-bold">MX</span>
+    <div style={{ minHeight: "100vh", backgroundColor: "#f8fafc", fontFamily: "system-ui, sans-serif" }}>
+
+      {/* Navbar */}
+      <header style={{ backgroundColor: "#fff", borderBottom: "1px solid #e2e8f0", position: "sticky", top: 0, zIndex: 10, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 38, height: 38, borderRadius: 10, background: "linear-gradient(135deg,#3b82f6,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(99,102,241,0.4)" }}>
+              <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>MX</span>
             </div>
             <div>
-              <div className="font-bold text-slate-800 text-base leading-tight">Maple X</div>
-              <div className="text-xs text-slate-400 leading-tight">Loan CRM</div>
+              <div style={{ fontWeight: 700, color: "#0f172a", fontSize: 15 }}>Maple X</div>
+              <div style={{ color: "#94a3b8", fontSize: 11 }}>Loan CRM</div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400 bg-slate-100 px-3 py-1.5 rounded-full font-medium">
-              {apps.length} Applications
-            </span>
+          <div style={{ background: "#f1f5f9", borderRadius: 20, padding: "6px 14px", fontSize: 12, color: "#64748b", fontWeight: 600 }}>
+            {apps.length} Applications
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8 w-full flex-1">
+      <main style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 24px" }}>
 
-        {/* Page title */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-slate-900">Applications</h1>
-          <p className="text-slate-500 text-sm mt-1">Manage and track all loan applications</p>
+        {/* Page heading */}
+        <div style={{ marginBottom: 28 }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: "#0f172a", margin: 0 }}>Applications</h1>
+          <p style={{ color: "#64748b", fontSize: 14, marginTop: 4 }}>Manage and track all loan applications</p>
         </div>
 
         {/* Status cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-          {STATUS_OPTIONS.map((s) => (
-            <button
-              key={s}
-              onClick={() => setFilter(filter === s ? "All" : s)}
-              className={`relative rounded-2xl p-5 text-left transition-all cursor-pointer group overflow-hidden shadow-sm hover:shadow-md ${
-                filter === s ? "ring-2 ring-offset-2 ring-blue-500 shadow-lg" : ""
-              }`}
-            >
-              <div className={`absolute inset-0 bg-gradient-to-br ${STATUS_STYLES[s].card} opacity-${filter === s ? "100" : "90"}`} />
-              <div className="relative z-10">
-                <div className="text-2xl mb-2">{STATUS_ICONS[s]}</div>
-                <div className="text-3xl font-bold text-white">{counts[s] ?? 0}</div>
-                <div className="text-white/80 text-xs font-medium mt-1">{s}</div>
-              </div>
-            </button>
-          ))}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 16, marginBottom: 28 }}>
+          {STATUS_OPTIONS.map((s) => {
+            const cfg = STATUS_CONFIG[s];
+            const isActive = filter === s;
+            return (
+              <button
+                key={s}
+                onClick={() => setFilter(filter === s ? "All" : s)}
+                style={{
+                  background: cfg.cardBg,
+                  border: isActive ? "3px solid #1e40af" : "3px solid transparent",
+                  borderRadius: 16,
+                  padding: "20px 16px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                  boxShadow: isActive ? "0 8px 24px rgba(0,0,0,0.18)" : "0 2px 8px rgba(0,0,0,0.08)",
+                  transform: isActive ? "scale(1.03)" : "scale(1)",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                <div style={{ fontSize: 22, marginBottom: 8 }}>{cfg.icon}</div>
+                <div style={{ fontSize: 32, fontWeight: 800, color: "#fff", lineHeight: 1 }}>{counts[s] ?? 0}</div>
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", fontWeight: 600, marginTop: 4 }}>{s}</div>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Search + filter bar */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-4">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
-              <input
-                type="text"
-                placeholder="Search business, owner, email, industry..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
-              />
-            </div>
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
-            >
-              <option value="All">All Statuses</option>
-              {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
+        {/* Search bar */}
+        <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: 16, marginBottom: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.04)", display: "flex", gap: 12 }}>
+          <div style={{ position: "relative", flex: 1 }}>
+            <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#94a3b8", fontSize: 14 }}>🔍</span>
+            <input
+              type="text"
+              placeholder="Search business, owner, email, industry..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ width: "100%", paddingLeft: 36, paddingRight: 16, paddingTop: 10, paddingBottom: 10, borderRadius: 10, border: "1px solid #e2e8f0", fontSize: 13, outline: "none", backgroundColor: "#f8fafc", boxSizing: "border-box" }}
+            />
           </div>
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            style={{ borderRadius: 10, border: "1px solid #e2e8f0", padding: "10px 16px", fontSize: 13, backgroundColor: "#f8fafc", outline: "none" }}
+          >
+            <option value="All">All Statuses</option>
+            {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
         </div>
 
         {/* Table */}
         {loading ? (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-20 text-center text-slate-400 text-sm">
+          <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: 80, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>
             Loading applications...
           </div>
         ) : filtered.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-20 text-center">
-            <div className="text-5xl mb-4">📭</div>
-            <div className="text-slate-500 text-sm font-medium">
-              {apps.length === 0
-                ? "No applications yet. Connect your JotForm webhook to start receiving applications."
-                : "No applications match your current filter."}
+          <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: 80, textAlign: "center" }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>📭</div>
+            <div style={{ color: "#64748b", fontSize: 14 }}>
+              {apps.length === 0 ? "No applications yet. Connect your JotForm webhook to get started." : "No applications match your filter."}
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+          <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
-                  <tr className="border-b border-slate-100">
-                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Business</th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Owner</th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Amount</th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Applied</th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Status Updated</th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Change</th>
-                    <th className="px-5 py-4"></th>
+                  <tr style={{ borderBottom: "1px solid #f1f5f9", backgroundColor: "#f8fafc" }}>
+                    {["Business", "Owner", "Amount", "Applied", "Status Updated", "Status", "Change Status", ""].map((h) => (
+                      <th key={h} style={{ padding: "14px 20px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>{h}</th>
+                    ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {filtered.map((app, i) => (
-                    <tr key={app.id} className="hover:bg-blue-50/30 transition-colors group">
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-xl ${AVATAR_COLORS[i % AVATAR_COLORS.length]} flex items-center justify-center text-white text-xs font-bold shrink-0`}>
-                            {initials(app.business_name)}
+                <tbody>
+                  {filtered.map((app, i) => {
+                    const cfg = STATUS_CONFIG[app.status];
+                    return (
+                      <tr key={app.id} style={{ borderBottom: "1px solid #f8fafc", backgroundColor: i % 2 === 1 ? "#fafafa" : "#fff", transition: "background 0.1s" }}
+                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#f0f7ff")}
+                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = i % 2 === 1 ? "#fafafa" : "#fff")}
+                      >
+                        <td style={{ padding: "14px 20px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: AVATAR_BG[i % AVATAR_BG.length], display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
+                              {initials(app.business_name)}
+                            </div>
+                            <div>
+                              <div style={{ fontWeight: 600, color: "#0f172a" }}>{app.business_name || "—"}</div>
+                              {app.industry && <div style={{ fontSize: 11, color: "#94a3b8" }}>{app.industry}</div>}
+                            </div>
                           </div>
-                          <div>
-                            <div className="font-semibold text-slate-800">{app.business_name || "—"}</div>
-                            {app.industry && <div className="text-xs text-slate-400">{app.industry}</div>}
+                        </td>
+                        <td style={{ padding: "14px 20px" }}>
+                          <div style={{ fontWeight: 500, color: "#334155" }}>{app.owner_name || "—"}</div>
+                          {app.owner_email && <div style={{ fontSize: 11, color: "#94a3b8" }}>{app.owner_email}</div>}
+                        </td>
+                        <td style={{ padding: "14px 20px", fontWeight: 700, color: "#0f172a", whiteSpace: "nowrap" }}>{formatCurrency(app.amount_requested)}</td>
+                        <td style={{ padding: "14px 20px", color: "#64748b", fontSize: 12, whiteSpace: "nowrap" }}>{formatDate(app.application_date)}</td>
+                        <td style={{ padding: "14px 20px", color: "#64748b", fontSize: 12, whiteSpace: "nowrap" }}>{formatDate(app.status_updated_at)}</td>
+                        <td style={{ padding: "14px 20px" }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, fontSize: 11, fontWeight: 700, backgroundColor: cfg?.bg ?? "#f1f5f9", color: cfg?.text ?? "#475569", border: `1px solid ${cfg?.border ?? "#e2e8f0"}` }}>
+                            <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: cfg?.dot ?? "#94a3b8", flexShrink: 0 }} />
+                            {app.status}
+                          </span>
+                        </td>
+                        <td style={{ padding: "14px 20px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <select
+                              value={app.status}
+                              disabled={updatingId === app.id}
+                              onChange={(e) => updateStatus(app.id, e.target.value)}
+                              style={{ fontSize: 12, borderRadius: 8, border: "1px solid #e2e8f0", padding: "6px 10px", backgroundColor: "#fff", outline: "none", opacity: updatingId === app.id ? 0.5 : 1 }}
+                            >
+                              {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+                            </select>
+                            {updatingId === app.id && <span style={{ fontSize: 11, color: "#94a3b8" }}>Saving…</span>}
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="text-slate-700 font-medium">{app.owner_name || "—"}</div>
-                        {app.owner_email && <div className="text-xs text-slate-400 truncate max-w-[160px]">{app.owner_email}</div>}
-                      </td>
-                      <td className="px-5 py-4">
-                        <span className="font-bold text-slate-800">{formatCurrency(app.amount_requested)}</span>
-                      </td>
-                      <td className="px-5 py-4 text-slate-500 text-xs whitespace-nowrap">{formatDate(app.application_date)}</td>
-                      <td className="px-5 py-4 text-slate-500 text-xs whitespace-nowrap">{formatDate(app.status_updated_at)}</td>
-                      <td className="px-5 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${STATUS_STYLES[app.status]?.badge ?? "bg-slate-100 text-slate-600"}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${STATUS_STYLES[app.status]?.dot ?? "bg-slate-400"}`} />
-                          {app.status}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-2">
-                          <select
-                            value={app.status}
-                            disabled={updatingId === app.id}
-                            onChange={(e) => updateStatus(app.id, e.target.value)}
-                            className="text-xs rounded-lg border border-slate-200 px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 text-slate-700"
-                          >
-                            {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-                          </select>
-                          {updatingId === app.id && (
-                            <span className="text-xs text-slate-400 animate-pulse">Saving…</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-5 py-4">
-                        <Link
-                          href={`/application/${app.id}`}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
-                        >
-                          View →
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td style={{ padding: "14px 20px" }}>
+                          <Link href={`/application/${app.id}`} style={{ fontSize: 12, fontWeight: 600, color: "#3b82f6", backgroundColor: "#eff6ff", padding: "6px 12px", borderRadius: 8, textDecoration: "none", whiteSpace: "nowrap" }}>
+                            View →
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
-            <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/50 text-xs text-slate-400">
+            <div style={{ padding: "12px 20px", borderTop: "1px solid #f1f5f9", backgroundColor: "#f8fafc", fontSize: 12, color: "#94a3b8" }}>
               Showing {filtered.length} of {apps.length} applications
             </div>
           </div>
