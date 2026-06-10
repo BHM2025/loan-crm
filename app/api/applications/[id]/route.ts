@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { initDb } from "@/lib/db";
+import { getSession } from "@/lib/auth";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const db = await initDb();
@@ -22,4 +23,19 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     documents: docsResult.rows,
     statusHistory: historyResult.rows,
   });
+}
+
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const db = await initDb();
+  const { id } = await params;
+
+  await db.execute({ sql: "DELETE FROM documents WHERE application_id = ?", args: [id] });
+  await db.execute({ sql: "DELETE FROM status_history WHERE application_id = ?", args: [id] });
+  await db.execute({ sql: "DELETE FROM notes WHERE application_id = ?", args: [id] });
+  await db.execute({ sql: "DELETE FROM applications WHERE id = ?", args: [id] });
+
+  return NextResponse.json({ ok: true });
 }

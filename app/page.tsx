@@ -74,6 +74,12 @@ export default function DashboardPage() {
     setUpdatingId(null);
   };
 
+  const deleteApp = async (id: number, name: string) => {
+    if (!confirm(`Delete application for "${name}"? This cannot be undone.`)) return;
+    await fetch(`/api/applications/${id}`, { method: "DELETE" });
+    await fetchApps();
+  };
+
   const filtered = apps.filter((a) => {
     if (filter !== "All" && a.status !== filter) return false;
     if (search) {
@@ -253,9 +259,17 @@ export default function DashboardPage() {
                           </div>
                         </td>
                         <td style={{ padding: "14px 20px" }}>
-                          <Link href={`/application/${app.id}`} style={{ fontSize: 12, fontWeight: 600, color: "#3b82f6", backgroundColor: "#eff6ff", padding: "6px 12px", borderRadius: 8, textDecoration: "none", whiteSpace: "nowrap" }}>
-                            View →
-                          </Link>
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <Link href={`/application/${app.id}`} style={{ fontSize: 12, fontWeight: 600, color: "#3b82f6", backgroundColor: "#eff6ff", padding: "6px 12px", borderRadius: 8, textDecoration: "none", whiteSpace: "nowrap" }}>
+                              View →
+                            </Link>
+                            <button
+                              onClick={() => deleteApp(app.id, app.business_name)}
+                              style={{ fontSize: 12, fontWeight: 600, color: "#dc2626", backgroundColor: "#fef2f2", border: "1px solid #fecaca", padding: "6px 10px", borderRadius: 8, cursor: "pointer", whiteSpace: "nowrap" }}
+                            >
+                              🗑
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
