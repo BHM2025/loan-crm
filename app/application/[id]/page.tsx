@@ -26,6 +26,7 @@ interface Document {
   original_url: string;
   filename: string;
   file_path: string;
+  uploaded_by?: string;
   uploaded_at: string;
 }
 
@@ -105,6 +106,9 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
   const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState("");
   const [savingNote, setSavingNote] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadDocType, setUploadDocType] = useState("Additional Document");
+  const [dragOver, setDragOver] = useState(false);
 
   const fetchNotes = async () => {
     const res = await fetch(`/api/applications/${id}/notes`);
@@ -122,6 +126,16 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
     setNewNote("");
     await fetchNotes();
     setSavingNote(false);
+  };
+
+  const uploadFile = async (file: File) => {
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("docType", uploadDocType);
+    await fetch(`/api/applications/${id}/upload`, { method: "POST", body: fd });
+    await fetchApp();
+    setUploading(false);
   };
 
   const deleteNote = async (noteId: number) => {
@@ -288,10 +302,40 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
 
         {/* Documents */}
         <Card title={`Documents (${app.documents.length})`} icon="📁">
+
+          {/* Upload area */}
+          <div style={{ marginBottom: 20, padding: 16, borderRadius: 12, border: `2px dashed ${dragOver ? "#3b82f6" : "#e2e8f0"}`, backgroundColor: dragOver ? "#eff6ff" : "#f8fafc", transition: "all 0.15s" }}
+            onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={e => { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files[0]; if (f) uploadFile(f); }}
+          >
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <select value={uploadDocType} onChange={e => setUploadDocType(e.target.value)}
+                  style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 13, backgroundColor: "#fff", outline: "none" }}>
+                  <option>Additional Document</option>
+                  <option>Most Recent Bank Statements</option>
+                  <option>Last 4 Months Bank Statements</option>
+                  <option>Driver&apos;s License</option>
+                  <option>Voided Check</option>
+                  <option>Credit Report</option>
+                  <option>Tax Return</option>
+                  <option>Business License</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <label style={{ padding: "9px 18px", borderRadius: 8, background: uploading ? "#94a3b8" : "linear-gradient(135deg,#3b82f6,#8b5cf6)", color: "#fff", fontSize: 13, fontWeight: 700, cursor: uploading ? "not-allowed" : "pointer", boxShadow: "0 2px 8px rgba(99,102,241,0.25)" }}>
+                {uploading ? "Uploading…" : "📎 Choose File"}
+                <input type="file" disabled={uploading} style={{ display: "none" }} onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f); e.target.value = ""; }} />
+              </label>
+            </div>
+            <div style={{ marginTop: 8, fontSize: 11, color: "#94a3b8", textAlign: "center" }}>or drag and drop a file here</div>
+          </div>
+
           {app.documents.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "32px 0" }}>
-              <div style={{ fontSize: 40, marginBottom: 10 }}>📂</div>
-              <div style={{ color: "#94a3b8", fontSize: 13 }}>No documents uploaded.</div>
+            <div style={{ textAlign: "center", padding: "20px 0" }}>
+              <div style={{ fontSize: 36, marginBottom: 8 }}>📂</div>
+              <div style={{ color: "#94a3b8", fontSize: 13 }}>No documents uploaded yet.</div>
             </div>
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -301,6 +345,7 @@ export default function ApplicationDetailPage({ params }: { params: Promise<{ id
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a" }}>{doc.document_type}</div>
                     <div style={{ fontSize: 11, color: "#94a3b8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{doc.filename || "View file"}</div>
+                    {doc.uploaded_by && <div style={{ fontSize: 10, color: "#cbd5e1" }}>by {doc.uploaded_by}</div>}
                   </div>
                   <a href={doc.file_path || doc.original_url} target="_blank" rel="noopener noreferrer"
                     style={{ fontSize: 11, fontWeight: 700, color: "#3b82f6", backgroundColor: "#eff6ff", padding: "6px 12px", borderRadius: 8, textDecoration: "none", flexShrink: 0 }}>

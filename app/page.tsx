@@ -112,6 +112,9 @@ export default function DashboardPage() {
             <div style={{ background: "#f1f5f9", borderRadius: 20, padding: "6px 14px", fontSize: 12, color: "#64748b", fontWeight: 600 }}>
               {apps.length} Applications
             </div>
+            <Link href="/admin/users" style={{ background: "#f5f3ff", border: "1px solid #ddd6fe", borderRadius: 20, padding: "6px 14px", fontSize: 12, color: "#5b21b6", fontWeight: 600, textDecoration: "none" }}>
+              👥 Users
+            </Link>
             <button
               onClick={async () => { await fetch("/api/auth/logout", { method: "POST" }); window.location.href = "/login"; }}
               style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 20, padding: "6px 14px", fontSize: 12, color: "#dc2626", fontWeight: 600, cursor: "pointer" }}

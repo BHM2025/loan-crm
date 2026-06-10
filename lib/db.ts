@@ -1,6 +1,16 @@
 import { createClient, type Client } from "@libsql/client";
 
 const SCHEMA = `
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'agent',
+    is_active INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+
   CREATE TABLE IF NOT EXISTS applications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     submission_id TEXT UNIQUE,
@@ -37,6 +47,7 @@ const SCHEMA = `
     original_url TEXT,
     filename TEXT,
     file_path TEXT,
+    uploaded_by TEXT,
     uploaded_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (application_id) REFERENCES applications(id)
   );
@@ -45,6 +56,7 @@ const SCHEMA = `
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     application_id INTEGER NOT NULL,
     status TEXT NOT NULL,
+    changed_by TEXT,
     changed_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (application_id) REFERENCES applications(id)
   );

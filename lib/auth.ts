@@ -4,30 +4,30 @@ import { cookies } from "next/headers";
 const SECRET = new TextEncoder().encode(
   process.env.AUTH_SECRET ?? "maple-x-crm-secret-change-in-production"
 );
-const COOKIE = "crm_session";
+export const COOKIE = "crm_session";
 
-export async function createSession() {
-  const token = await new SignJWT({ admin: true })
+export interface SessionUser {
+  id: number;
+  name: string;
+  email: string;
+  role: "admin" | "agent";
+}
+
+export async function createSession(user: SessionUser): Promise<string> {
+  return new SignJWT({ ...user })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("7d")
     .sign(SECRET);
-  return token;
 }
 
-export async function verifySession(token: string) {
-  try {
-    await jwtVerify(token, SECRET);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-export async function getSession() {
+export async function getSession(): Promise<SessionUser | null> {
   const store = await cookies();
   const token = store.get(COOKIE)?.value;
-  if (!token) return false;
-  return verifySession(token);
+  if (!token) return null;
+  try {
+    const { payload } = await jwtVerify(token, SECRET);
+    return payload as unknown as SessionUser;
+  } catch {
+    return null;
+  }
 }
-
-export { COOKIE };
