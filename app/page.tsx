@@ -114,15 +114,15 @@ export default function DashboardPage() {
     <div style={{ minHeight: "100vh", backgroundColor: "transparent", fontFamily: "system-ui, sans-serif" }}>
 
       {/* Navbar */}
-      <header style={{ backgroundColor: "#fff", borderBottom: "1px solid #e2e8f0", position: "sticky", top: 0, zIndex: 10, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+      <header style={{ backgroundColor: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)", borderBottom: "1px solid rgba(255,255,255,0.2)", position: "sticky", top: 0, zIndex: 10 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ width: 38, height: 38, borderRadius: 10, background: "linear-gradient(135deg,#3b82f6,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(99,102,241,0.4)" }}>
               <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>MX</span>
             </div>
             <div>
-              <div style={{ fontWeight: 700, color: "#0f172a", fontSize: 15 }}>Maple X</div>
-              <div style={{ color: "#94a3b8", fontSize: 11 }}>Loan CRM</div>
+              <div style={{ fontWeight: 700, color: "#fff", fontSize: 15 }}>Maple X</div>
+              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>Loan CRM</div>
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
