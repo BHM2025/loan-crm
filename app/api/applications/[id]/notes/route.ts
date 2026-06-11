@@ -27,19 +27,23 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   });
 
   // Send email notification to applicant (non-blocking)
-  const appResult = await db.execute({
-    sql: "SELECT owner_name, owner_email, business_name FROM applications WHERE id = ?",
-    args: [id],
-  });
-  if (appResult.rows.length > 0) {
-    const row = appResult.rows[0];
-    const ownerEmail = row.owner_email as string;
-    const ownerName = (row.owner_name as string) || "Applicant";
-    const businessName = (row.business_name as string) || "your business";
-    if (ownerEmail) {
-      const { html, text } = noteAddedEmail(ownerName, businessName, content.trim(), id);
-      sendEmail({ to: ownerEmail, subject: `Message from your Maple X agent — ${businessName}`, html, text });
+  try {
+    const appResult = await db.execute({
+      sql: "SELECT owner_name, owner_email, business_name FROM applications WHERE id = ?",
+      args: [Number(id)],
+    });
+    if (appResult.rows.length > 0) {
+      const row = appResult.rows[0];
+      const ownerEmail = row.owner_email as string;
+      const ownerName = (row.owner_name as string) || "Applicant";
+      const businessName = (row.business_name as string) || "your business";
+      if (ownerEmail) {
+        const { html, text } = noteAddedEmail(ownerName, businessName, content.trim(), id);
+        await sendEmail({ to: ownerEmail, subject: `Message from your Maple X agent — ${businessName}`, html, text });
+      }
     }
+  } catch (err) {
+    console.error("Note email error:", err);
   }
 
   return NextResponse.json({ ok: true, id: Number(result.lastInsertRowid) });
