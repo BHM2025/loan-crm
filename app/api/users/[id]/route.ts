@@ -30,6 +30,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   if (!session || session.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
   const db = await initDb();
+  await db.execute({ sql: "DELETE FROM password_reset_tokens WHERE user_id = ?", args: [id] });
   await db.execute({ sql: "DELETE FROM users WHERE id = ?", args: [id] });
   return NextResponse.json({ ok: true });
 }
