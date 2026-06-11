@@ -5,7 +5,7 @@ const SECRET = new TextEncoder().encode(
   process.env.AUTH_SECRET ?? "maple-x-crm-secret-change-in-production"
 );
 
-const PUBLIC_PATHS = ["/login", "/api/auth", "/api/webhooks", "/api/upload-public"];
+const PUBLIC_PATHS = ["/login", "/forgot-password", "/reset-password", "/api/auth", "/api/webhooks", "/api/upload-public"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

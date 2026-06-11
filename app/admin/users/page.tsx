@@ -68,6 +68,13 @@ export default function UsersPage() {
     await fetchUsers();
   };
 
+  const [resetSent, setResetSent] = useState<number | null>(null);
+  const sendReset = async (id: number) => {
+    await fetch(`/api/users/${id}/send-reset`, { method: "POST" });
+    setResetSent(id);
+    setTimeout(() => setResetSent(null), 3000);
+  };
+
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "transparent", fontFamily: "system-ui, sans-serif" }}>
 
@@ -210,6 +217,10 @@ export default function UsersPage() {
                     <td style={{ padding: "14px 20px", color: "#64748b", fontSize: 12 }}>{formatDate(user.created_at)}</td>
                     <td style={{ padding: "14px 20px" }}>
                       <div style={{ display: "flex", gap: 8 }}>
+                        <button onClick={() => sendReset(user.id)}
+                          style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #bfdbfe", backgroundColor: "#eff6ff", color: "#1d4ed8", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                          {resetSent === user.id ? "✓ Sent!" : "Send reset link"}
+                        </button>
                         <button onClick={() => toggleActive(user)}
                           style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0", backgroundColor: "#f8fafc", color: "#475569", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
                           {user.is_active ? "Deactivate" : "Activate"}

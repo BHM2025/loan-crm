@@ -72,6 +72,9 @@ function LoginForm() {
               />
               {error && <div style={{ marginTop: 8, fontSize: 12, color: "#ef4444" }}>⚠️ {error}</div>}
             </div>
+            <div style={{ textAlign: "right", marginBottom: 8, marginTop: -8 }}>
+              <a href="/forgot-password" style={{ fontSize: 12, color: "#3b82f6", textDecoration: "none", fontWeight: 600 }}>Forgot password?</a>
+            </div>
             <button type="submit" disabled={loading || !email || !password}
               style={{ width: "100%", padding: "13px", borderRadius: 10, border: "none", background: loading || !email || !password ? "#94a3b8" : "linear-gradient(135deg,#3b82f6,#8b5cf6)", color: "#fff", fontSize: 14, fontWeight: 700, cursor: loading || !email || !password ? "not-allowed" : "pointer", boxShadow: "0 4px 14px rgba(99,102,241,0.4)", transition: "all 0.15s" }}>
               {loading ? "Signing in…" : "Sign In →"}
