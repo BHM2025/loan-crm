@@ -97,11 +97,14 @@ export function noteAddedEmail(ownerName: string, businessName: string, noteCont
           </div>
           <p style="font-size:12px;color:#94a3b8;margin:0;">Application ID: #${appId}</p>
         </div>
+        <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center;">
+          <p style="font-size:12px;color:#94a3b8;margin:0;">If you have questions, please contact your Maple X representative.</p>
+        </div>
       </div>
     </div>
   `;
 
-  const text = `Hi ${ownerName},\n\nOur team has left a message regarding your application for ${businessName}:\n\n"${noteContent}"\n\nApplication ID: #${appId}\n\n— Maple X Business Funding`;
+  const text = `Hi ${ownerName},\n\nOur team has left a message regarding your application for ${businessName}:\n\n"${noteContent}"\n\nApplication ID: #${appId}\n\nIf you have questions, please contact your Maple X representative.\n\n— Maple X Business Funding`;
 
   return { html, text };
 }
