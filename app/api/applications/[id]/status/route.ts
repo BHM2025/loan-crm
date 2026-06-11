@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { initDb } from "@/lib/db";
 import { sendEmail, statusChangeEmail } from "@/lib/email";
 
+const VALID_STATUSES = ["New", "Underwriting", "Approved", "Funded", "Declined"];
+
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const db = await initDb();
   const { id } = await params;
