@@ -71,9 +71,6 @@ export function statusChangeEmail(ownerName: string, businessName: string, statu
           <p style="font-size:14px;color:#475569;margin:0 0 24px;">${message}</p>
           <p style="font-size:12px;color:#94a3b8;margin:0;">Application ID: #${appId}</p>
         </div>
-        <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center;">
-          <p style="font-size:12px;color:#94a3b8;margin:0;">Questions? Reply to this email or contact your Maple X representative.</p>
-        </div>
       </div>
     </div>
   `;
@@ -100,9 +97,6 @@ export function noteAddedEmail(ownerName: string, businessName: string, noteCont
           </div>
           <p style="font-size:14px;color:#475569;margin:0 0 8px;">Please respond or provide any requested documents as soon as possible to keep your application moving forward.</p>
           <p style="font-size:12px;color:#94a3b8;margin:0;">Application ID: #${appId}</p>
-        </div>
-        <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;text-align:center;">
-          <p style="font-size:12px;color:#94a3b8;margin:0;">Questions? Reply to this email or contact your Maple X representative.</p>
         </div>
       </div>
     </div>
