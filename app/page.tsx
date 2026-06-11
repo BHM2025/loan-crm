@@ -147,8 +147,8 @@ export default function DashboardPage() {
         {/* Page heading */}
         <div style={{ marginBottom: 28, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#2d4ebd", margin: 0 }}>Applications</h1>
-            <p style={{ color: "#64748b", fontSize: 14, marginTop: 4 }}>Manage and track all loan applications</p>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: 0 }}>Applications</h1>
+            <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 14, marginTop: 4 }}>Manage and track all loan applications</p>
           </div>
           <button
             onClick={() => setShowArchived(!showArchived)}
