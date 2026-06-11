@@ -44,8 +44,8 @@ function LoginForm() {
           <div style={{ width: 56, height: 56, borderRadius: 16, background: "linear-gradient(135deg,#3b82f6,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 8px 24px rgba(99,102,241,0.35)" }}>
             <span style={{ color: "#fff", fontSize: 20, fontWeight: 800 }}>MX</span>
           </div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", margin: "0 0 6px" }}>Maple X Loan CRM</h1>
-          <p style={{ color: "#64748b", fontSize: 14, margin: 0 }}>Sign in to your account</p>
+          <h1 style={{ fontSize: 22, fontWeight: 800, color: "#fff", margin: "0 0 6px" }}>Maple X Loan CRM</h1>
+          <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 14, margin: 0 }}>Sign in to your account</p>
         </div>
 
         {/* Card */}
@@ -79,7 +79,7 @@ function LoginForm() {
           </form>
         </div>
 
-        <p style={{ textAlign: "center", color: "#94a3b8", fontSize: 12, marginTop: 20 }}>🔒 Secure admin & agent access</p>
+        <p style={{ textAlign: "center", color: "rgba(255,255,255,0.6)", fontSize: 12, marginTop: 20 }}>🔒 Secure admin & agent access</p>
       </div>
     </div>
   );
