@@ -21,12 +21,19 @@ export async function POST(req: NextRequest) {
     if (!valid) return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     sessionUser = { id: Number(user.id), name: String(user.name), email: String(user.email), role: String(user.role) as "admin" | "agent" };
   } else {
-    // Fallback: admin login via env var (email = "admin", password = ADMIN_PASSWORD)
-    const adminPassword = process.env.ADMIN_PASSWORD ?? "admin123";
-    if (email !== "admin" || password !== adminPassword) {
-      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+    // Super-admin via env vars — never visible in Users list
+    const superEmail = process.env.SUPER_ADMIN_EMAIL;
+    const superPassword = process.env.SUPER_ADMIN_PASSWORD;
+    if (superEmail && superPassword && email === superEmail && password === superPassword) {
+      sessionUser = { id: -1, name: "Super Admin", email: superEmail, role: "admin" as const };
+    } else {
+      // Fallback: legacy admin login via env var
+      const adminPassword = process.env.ADMIN_PASSWORD ?? "admin123";
+      if (email !== "admin" || password !== adminPassword) {
+        return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+      }
+      sessionUser = { id: 0, name: "Admin", email: "admin", role: "admin" as const };
     }
-    sessionUser = { id: 0, name: "Admin", email: "admin", role: "admin" as const };
   }
 
   const token = await createSession(sessionUser);
