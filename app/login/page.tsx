@@ -36,7 +36,7 @@ function LoginForm() {
   });
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)), url('/bg.png') center/cover no-repeat, linear-gradient(135deg, #0a2463 0%, #1565c0 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "system-ui, sans-serif" }}>
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "system-ui, sans-serif" }}>
       <div style={{ width: "100%", maxWidth: 400, padding: "0 24px" }}>
 
         {/* Logo */}
