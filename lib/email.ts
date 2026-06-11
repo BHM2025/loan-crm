@@ -95,14 +95,13 @@ export function noteAddedEmail(ownerName: string, businessName: string, noteCont
             <div style="font-size:11px;font-weight:700;color:#b45309;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">📋 Message from your agent</div>
             <p style="font-size:14px;color:#334155;margin:0;line-height:1.6;">${noteContent}</p>
           </div>
-          <p style="font-size:14px;color:#475569;margin:0 0 8px;">Please respond or provide any requested documents as soon as possible to keep your application moving forward.</p>
           <p style="font-size:12px;color:#94a3b8;margin:0;">Application ID: #${appId}</p>
         </div>
       </div>
     </div>
   `;
 
-  const text = `Hi ${ownerName},\n\nOur team has left a message regarding your application for ${businessName}:\n\n"${noteContent}"\n\nPlease respond or provide any requested documents as soon as possible.\n\nApplication ID: #${appId}\n\n— Maple X Business Funding`;
+  const text = `Hi ${ownerName},\n\nOur team has left a message regarding your application for ${businessName}:\n\n"${noteContent}"\n\nApplication ID: #${appId}\n\n— Maple X Business Funding`;
 
   return { html, text };
 }
