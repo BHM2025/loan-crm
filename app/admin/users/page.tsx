@@ -63,11 +63,12 @@ export default function UsersPage() {
   };
 
   const deleteUser = async (id: number) => {
-    if (!confirm("Delete this user? This cannot be undone.")) return;
     await fetch(`/api/users/${id}`, { method: "DELETE" });
+    setConfirmDelete(null);
     await fetchUsers();
   };
 
+  const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
   const [resetSent, setResetSent] = useState<number | null>(null);
   const sendReset = async (id: number) => {
     await fetch(`/api/users/${id}/send-reset`, { method: "POST" });
@@ -225,10 +226,24 @@ export default function UsersPage() {
                           style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0", backgroundColor: "#f8fafc", color: "#475569", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
                           {user.is_active ? "Deactivate" : "Activate"}
                         </button>
-                        <button onClick={() => deleteUser(user.id)}
-                          style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #fecaca", backgroundColor: "#fef2f2", color: "#dc2626", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                          Delete
-                        </button>
+                        {confirmDelete === user.id ? (
+                          <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <span style={{ fontSize: 12, color: "#dc2626", fontWeight: 600 }}>Sure?</span>
+                            <button onClick={() => deleteUser(user.id)}
+                              style={{ padding: "6px 10px", borderRadius: 8, border: "1px solid #fecaca", backgroundColor: "#fef2f2", color: "#dc2626", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                              Yes, delete
+                            </button>
+                            <button onClick={() => setConfirmDelete(null)}
+                              style={{ padding: "6px 10px", borderRadius: 8, border: "1px solid #e2e8f0", backgroundColor: "#f8fafc", color: "#64748b", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                              Cancel
+                            </button>
+                          </span>
+                        ) : (
+                          <button onClick={() => setConfirmDelete(user.id)}
+                            style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #fecaca", backgroundColor: "#fef2f2", color: "#dc2626", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                            Delete
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
