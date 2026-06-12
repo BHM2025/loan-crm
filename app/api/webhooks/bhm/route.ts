@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { initDb } from "@/lib/db";
+import { sendAlert } from "@/lib/email";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -96,6 +97,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, id: appId }, { headers: CORS });
   } catch (err) {
     console.error("BHM webhook error:", err);
+    sendAlert({ subject: "Form submission failed — BHM webhook error", details: String(err) });
     return NextResponse.json({ ok: false, error: String(err) }, { status: 500, headers: CORS });
   }
 }

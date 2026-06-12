@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { put } from "@vercel/blob";
+import { sendAlert } from "@/lib/email";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, url: blob.url, name: file.name }, { headers: CORS });
   } catch (err) {
+    sendAlert({ subject: "Document upload failed — upload-public error", details: String(err) });
     return NextResponse.json({ error: String(err) }, { status: 500, headers: CORS });
   }
 }

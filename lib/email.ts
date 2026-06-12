@@ -1,5 +1,20 @@
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.FROM_EMAIL ?? "Maple X Business Funding <notifications@mapleXfunding.com>";
+const FROM_EMAIL = process.env.FROM_EMAIL ?? "Maple X Business Funding <maple-x@bhmleadbridge.com>";
+const ALERT_EMAIL = process.env.ALERT_EMAIL ?? "lhea@blueharbor-media.com";
+
+export async function sendAlert({ subject, details }: { subject: string; details: string }) {
+  const html = `
+    <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:24px;">
+      <div style="background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #ef4444;border-radius:8px;padding:20px;">
+        <div style="font-size:13px;font-weight:700;color:#b91c1c;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">⚠️ System Alert — Maple X CRM</div>
+        <div style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:12px;">${subject}</div>
+        <pre style="font-size:12px;color:#475569;background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:12px;overflow:auto;white-space:pre-wrap;">${details}</pre>
+        <div style="font-size:11px;color:#94a3b8;margin-top:12px;">${new Date().toISOString()}</div>
+      </div>
+    </div>
+  `;
+  await sendEmail({ to: ALERT_EMAIL, subject: `🚨 ${subject}`, html, text: `${subject}\n\n${details}\n\n${new Date().toISOString()}` });
+}
 
 export async function sendEmail({
   to,

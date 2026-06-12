@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { initDb } from "@/lib/db";
-import { sendEmail, statusChangeEmail } from "@/lib/email";
+import { sendEmail, statusChangeEmail, sendAlert } from "@/lib/email";
 
 const VALID_STATUSES = ["New", "Underwriting", "Approved", "Funded", "Declined"];
 
